@@ -1,0 +1,914 @@
+<?php
+class block_netflix_dash extends block_base {
+
+    public function init() {
+        // Ocultamos el título por defecto para que tu Hero section domine todo
+        $this->title = ''; 
+    }
+
+    public function get_content() {
+        if ($this->content !== null) {
+            return $this->content;
+        }
+
+        $this->content = new stdClass();
+
+        // Aquí inyectamos tu CSS Vainilla y la estructura HTML Semántica
+        $html = '
+        <style>
+ :root {
+    /* Stitch Cinematic Theme Tokens */
+    --surface-container-lowest: #0d0e0f;
+    --surface-container-low: #1a1c1c;
+    --surface-container: #1e2020;
+    --surface-container-high: #282a2b;
+    --surface-container-highest: #333535;
+
+    --surface-variant: #333535;
+    --on-surface: #e2e2e2;
+    --on-surface-variant: #aabacc; /* Clean corporate blue-grey instead of green-grey */
+
+    --primary-container: #00b86b; /* Restored elegant green (less glaring) */
+    --on-primary-fixed: #00210c;
+    --primary-fixed-dim: #009e5c;
+    --surface-tint: #009e5c;
+
+    --secondary-container: #3c4b5a;
+    --outline-variant: #2e3d52; /* Dark blue-grey border on hover */
+
+    --background: #121414;
+    --on-background: #e2e2e2;
+
+    /* BorgWarner Brand Colors */
+    --bw-blue: #00386C;
+    --bw-blue-dark: #002140;
+    --bw-blue-active: #1890ff;
+    --bw-blue-active-bg: rgba(24, 144, 255, 0.15);
+
+    /* Semantic values */
+    --bg-base: var(--surface-container-lowest);
+    --text-primary: var(--on-surface);
+    --text-secondary: var(--on-surface-variant);
+
+    /* Layout */
+    --edge-margin: 40px;
+    --edge-margin-mobile: 20px;
+    --stack-xl: 40px;
+    --stack-md: 20px;
+    --stack-sm: 12px;
+    --gutter: 16px;
+
+    --card-ratio: 16/9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    /* Selection styling matching design */
+    selection-background-color: var(--bw-blue-active);
+    selection-color: #ffffff;
+}
+
+::selection {
+    background-color: var(--bw-blue-active);
+    color: #ffffff;
+}
+
+/* Typography Utilities */
+.text-on-surface {
+    color: var(--on-surface);
+}
+
+.text-on-surface-variant {
+    color: var(--on-surface-variant);
+}
+
+h1,
+h2,
+h3 {
+    margin: 0;
+}
+
+/* Top AppBar */
+.top-app-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 50;
+    background: var(--bw-blue);
+    /* BorgWarner Blue */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--edge-margin);
+    height: 64px;
+    transition: all 0.3s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.brand-logo {
+    height: 24px;
+    display: block;
+    width: auto;
+    max-width: 100%;
+}
+
+@media (max-width: 768px) {
+    .brand-logo {
+        height: 20px;
+        max-width: 180px;
+    }
+}
+
+.brand-container {
+    display: flex;
+    align-items: center;
+    gap: var(--stack-md);
+    margin-left: 64px;
+    /* Offset for sidebar */
+}
+
+@media (max-width: 768px) {
+    .brand-container {
+        margin-left: 0;
+    }
+
+    .top-app-bar {
+        padding: 0 var(--edge-margin-mobile);
+    }
+}
+
+.brand {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 32px;
+    letter-spacing: -0.02em;
+    color: var(--on-background);
+}
+
+.top-nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--stack-md);
+}
+
+.top-nav-actions {
+    display: flex;
+    gap: var(--stack-sm);
+}
+
+@media (max-width: 768px) {
+    .top-nav-actions {
+        display: none;
+    }
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    color: var(--on-surface-variant);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.icon-btn:hover {
+    color: var(--primary-fixed-dim);
+}
+
+.icon-btn .material-symbols-outlined {
+    transition: transform 0.3s;
+}
+
+.icon-btn:hover .material-symbols-outlined {
+    transform: scale(1.05);
+}
+
+.icon-label {
+    font-size: 12px;
+    line-height: 16px;
+    margin-top: 4px;
+}
+
+.user-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--surface-variant);
+    color: var(--on-surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.user-profile:hover {
+    background-color: var(--surface-container-highest);
+}
+
+/* Side NavBar */
+.side-nav-bar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 64px;
+    z-index: 40;
+    background-color: var(--bw-blue);
+    /* BorgWarner Blue */
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--stack-md) 0;
+    padding-top: 80px;
+    /* Space for top bar */
+    justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+    .side-nav-bar {
+        display: none;
+    }
+}
+
+.side-nav-top,
+.side-nav-bottom {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 8px;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 12px 0;
+    color: var(--on-surface-variant);
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--on-surface);
+}
+
+.nav-item.active {
+    color: var(--bw-blue-active);
+    background-color: var(--bw-blue-active-bg);
+    border-left: 4px solid var(--bw-blue-active);
+}
+
+.nav-item .material-symbols-outlined {
+    transition: transform 0.2s;
+}
+
+.nav-item:not(.active):hover .material-symbols-outlined {
+    transform: scale(1.1);
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: 64px;
+    margin-top: 64px;
+    /* Empezar debajo de la barra superior */
+    height: calc(100vh - 64px);
+    /* Forzar que todo quepa en el espacio restante de la pantalla */
+    overflow: hidden;
+    /* Sin scroll general */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+        overflow-y: auto;
+        height: auto;
+    }
+}
+
+/* Hero Section */
+.hero-section {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    /* Ocupa todo el espacio restante empujando al catálogo abajo */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* Centrado verticalmente para estar a la par de la imagen */
+    padding-bottom: 20px;
+    padding-left: var(--edge-margin);
+    padding-right: var(--edge-margin);
+    /* Sin padding-top para permitir el centrado perfecto */
+}
+
+@media (max-width: 600px) {
+    .hero-section {
+        padding-left: var(--edge-margin-mobile);
+        padding-right: var(--edge-margin-mobile);
+        padding-bottom: 100px;
+    }
+}
+
+.hero-bg-container {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.hero-bg-image {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 1;
+    /* Aumentamos la opacidad para que se vea clara */
+    transform: scale(1.05);
+    /* filter: blur(8px); Eliminamos el desenfoque para que se vea nítida */
+    transition: background-image 0.5s ease-in-out;
+}
+
+.hero-gradient-side {
+    position: absolute;
+    inset: 0;
+    /* Gradiente que se funde con el fondo de la página (negro) */
+    background: linear-gradient(to right, rgba(13, 14, 15, 1) 0%, rgba(13, 14, 15, 0.9) 35%, rgba(13, 14, 15, 0.4) 60%, transparent 100%);
+}
+
+.hero-gradient-bottom {
+    position: absolute;
+    inset: 0;
+    /* Gradiente inferior para fundir con el fondo y las tarjetas */
+    background: linear-gradient(to top, rgba(13, 14, 15, 1) 0%, rgba(13, 14, 15, 0.6) 20%, transparent 100%);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 10;
+    max-width: 768px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--stack-md);
+    margin-top: auto;
+    margin-bottom: 40px; /* Sube el bloque de texto del Hero */
+}
+
+#hero-title {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 40px;
+    letter-spacing: -0.02em;
+    color: var(--on-surface);
+    text-wrap: balance;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+#hero-title::after {
+    content: '';
+    display: block;
+    width: 150px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin-top: 16px;
+}
+
+@media (max-width: 768px) {
+    #hero-title {
+        font-size: 32px;
+        line-height: 40px;
+    }
+}
+
+#hero-description {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    color: var(--on-surface-variant);
+    max-width: 600px;
+    text-wrap: balance;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    font-size: 14px;
+    color: rgba(170, 186, 204, 0.8);
+    /* on-surface-variant/80 (blue-grey) */
+    margin-top: 4px;
+}
+
+.meta-divider {
+    color: rgba(170, 186, 204, 0.4);
+}
+
+@media (max-width: 768px) {
+    .meta-divider {
+        display: none;
+    }
+}
+
+.btn-primary {
+    background-color: var(--primary-container);
+    color: white;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    width: max-content;
+    margin-top: 16px;
+}
+
+.btn-primary:hover {
+    background-color: var(--surface-tint);
+    transform: scale(1.05);
+    box-shadow: 0 0 24px rgba(0, 184, 107, 0.4);
+}
+
+/* Catalog Rails */
+.catalog-section {
+    position: relative;
+    z-index: 20;
+    padding-left: var(--edge-margin);
+    padding-right: var(--edge-margin);
+    padding-bottom: 20px;
+    margin-top: -10px;
+}
+
+@media (max-width: 768px) {
+    .catalog-section {
+        padding-left: var(--edge-margin-mobile);
+        padding-right: var(--edge-margin-mobile);
+    }
+}
+
+.catalog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--stack-sm);
+}
+
+.catalog-header h2 {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+    color: var(--on-surface);
+}
+
+@media (max-width: 768px) {
+    .catalog-header h2 {
+        font-size: 24px;
+        line-height: 30px;
+    }
+}
+
+.carousel-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 40%;
+    transform: translateY(-50%);
+    z-index: 30;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(5, 13, 23, 0.85);
+    /* Fondo oscuro semitransparente */
+    border: 1.5px solid rgba(255, 255, 255, 0.6);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.carousel-btn:hover {
+    background-color: rgba(24, 144, 255, 0.15);
+    /* Tint azul del hover */
+    border-color: var(--bw-blue-active);
+    color: var(--bw-blue-active);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.left-btn {
+    left: -20px;
+    /* Sale un poco sobre el padding izquierdo */
+}
+
+.right-btn {
+    right: -20px;
+}
+
+.catalog-rail {
+    display: flex;
+    overflow-x: auto;
+    gap: var(--gutter);
+    padding-top: 10px;
+    /* Espacio para que no se corte la tarjeta al hacer scale en hover */
+    padding-bottom: 20px;
+    margin-top: -10px;
+    /* Compensamos el padding superior */
+    scroll-snap-type: x mandatory;
+    /* Hide scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* Mask gradient on the right to fade out cards at the edge */
+    mask-image: linear-gradient(to right, black calc(100% - 80px), transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 80px), transparent 100%);
+}
+
+.catalog-rail::-webkit-scrollbar {
+    display: none;
+}
+
+.course-card {
+    flex-shrink: 0;
+    width: 350px; /* Aumentado de 300px */
+    /* Tamaño aumentado de los cuadros */
+    scroll-snap-align: start;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #050505;
+    /* Mantener 2px de borde siempre para evitar saltos en el layout al hacer hover/active */
+    border: 2px solid rgba(170, 186, 204, 0.15); /* Clean blue-grey border */
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 768px) {
+    .course-card {
+        width: 360px; /* Aumentado de 320px */
+    }
+}
+
+.course-card:hover {
+    border-color: var(--outline-variant);
+    transform: translateY(-5px) scale(1.02);
+    /* Elevar un poco la tarjeta */
+    box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.course-card.active {
+    border-color: var(--bw-blue-active);
+    box-shadow: 0 0 12px rgba(24, 144, 255, 0.35);
+}
+
+.course-card.active:hover {
+    transform: translateY(-5px) scale(1.02);
+}
+
+.card-image-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: var(--surface-container-high);
+    overflow: hidden;
+}
+
+.card-bg {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.7s;
+    opacity: 0.8;
+}
+
+.course-card.active .card-bg,
+.course-card:hover .card-bg {
+    opacity: 1;
+}
+
+.course-card:hover .card-bg {
+    transform: scale(1.05);
+}
+
+.card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(18, 20, 20, 0.8) 0%, transparent 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.course-card:hover .card-overlay {
+    opacity: 1;
+}
+
+.card-progress-track {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--surface-container-highest);
+    display: none;
+}
+
+.course-card.active .card-progress-track {
+    display: block;
+}
+
+.card-progress-fill {
+    height: 100%;
+    background-color: var(--bw-blue-active);
+    width: 15%;
+    /* Default, can be dynamic */
+}
+
+.card-info-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.2) 60%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 16px;
+    padding-bottom: 20px; /* Space for the progress bar */
+    z-index: 5;
+}
+
+.card-title {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--on-surface);
+    white-space: normal;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.course-card:hover .card-title {
+    color: var(--on-surface);
+}
+
+.course-card.active .card-title {
+    color: var(--bw-blue-active);
+}
+}
+</style>
+<!-- ESTRUCTURA DEL DASHBOARD -->
+        <div class="main-content">
+            <!-- Fondo Global para todo el contenido principal -->
+            <div class="hero-bg-container">
+                <div class="hero-bg-image" id="hero-bg-image"></div>
+                <!-- Gradient Masks for cinematic effect -->
+                <div class="hero-gradient-side"></div>
+                <div class="hero-gradient-bottom"></div>
+            </div>
+
+            <!-- Cinematic Hero Section -->
+            <section class="hero-section" id="hero-section">
+                <div class="hero-content">
+                    <h1 id="hero-title">Fundamentos Corporativos y <br>Valores</h1>
+                    <p id="hero-description">Más allá de las estrategias y los objetivos comerciales, la verdadera fuerza de
+                        nuestra organización reside en su identidad y en los principios que guían a nuestro equipo todos los
+                        días. Este curso está diseñado para ser tu brújula interna y ayudarte a comprender a fondo el ADN de
+                        nuestra cultura corporativa.</p>
+
+                    <div class="hero-meta">
+                        <span class="meta-item"><strong class="text-on-surface">Profesor:</strong> <span
+                                id="hero-professor">Fredy V.</span></span>
+                        <span class="meta-divider">|</span>
+                        <span class="meta-item"><strong class="text-on-surface">Inscritos:</strong> <span
+                                id="hero-enrolled">0 and you</span></span>
+                        <span class="meta-divider">|</span>
+                        <span class="meta-item"><strong class="text-on-surface">Comienzo:</strong> <span id="hero-date">1
+                                julio 2026</span></span>
+                    </div>
+
+                    <button class="btn-primary">
+                        COMENZAR
+                    </button>
+                </div>
+            </section>
+
+            <!-- Course Catalog Rails -->
+            <section class="catalog-section" id="catalog">
+                <div class="catalog-header">
+                    <h2>Mis Cursos y Recomendaciones</h2>
+                </div>
+                
+                <div class="carousel-container">
+                    <button class="carousel-btn left-btn" id="scroll-left" style="display: none;">
+                        <span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+
+                    <div class="catalog-rail" id="carousel-track">
+                        <!-- Courses injected by JS -->
+                    </div>
+
+                    <button class="carousel-btn right-btn" id="scroll-right">
+                        <span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+            </section>
+        </div>
+        
+        <script>
+        const courses = [
+    {
+        id: 1,
+        title: "Fundamentos<br>Corporativos y Valores",
+        description: "Más allá de las estrategias y los objetivos comerciales, la verdadera fuerza de nuestra organización reside en su identidad y en los principios que guían a nuestro equipo todos los días. Este curso está diseñado para ser tu brújula interna y ayudarte a comprender a fondo el ADN de nuestra cultura corporativa.",
+        professor: "Fredy V.",
+        enrolled: "0 and you",
+        date: "1 julio 2026",
+        image: "assets/Mesa de trabajo 1.png",
+        meta: "En progreso",
+        progress: 15
+    },
+    {
+        id: 2,
+        title: "EHS Seguridad Industrial",
+        description: "Descubre el funcionamiento interno de nuestros sistemas en la nube. Aprende a aplicar técnicas avanzadas para optimizar la producción y mantener los más altos estándares de calidad.",
+        professor: "Fredy V.",
+        enrolled: "45 students",
+        date: "15 agosto 2026",
+        image: "assets/Mesa de trabajo 2.png",
+        meta: "Próximamente",
+        progress: 0
+    },
+    {
+        id: 3,
+        title: "Servicio Medico",
+        description: "Desarrolla las habilidades necesarias para liderar proyectos de IA. Aprende a construir modelos predictivos y toma de decisiones estratégicas basadas en datos.",
+        professor: "Andrea M.",
+        enrolled: "120 students",
+        date: "5 septiembre 2026",
+        image: "assets/Mesa de trabajo 3.png",
+        meta: "Próximamente",
+        progress: 0
+    },
+    {
+        id: 4,
+        title: "Producto",
+        description: "Domina las herramientas de desarrollo web para construir plataformas interactivas robustas, extrayendo insights valiosos que impulsarán el crecimiento.",
+        professor: "Fredy V.",
+        enrolled: "85 students",
+        date: "20 octubre 2026",
+        image: "assets/Mesa de trabajo 4.png",
+        meta: "En progreso",
+        progress: 45
+    },
+    {
+        id: 5,
+        title: "Cadena de suministro",
+        description: "Desarrolla las habilidades necesarias para liderar equipos de alto rendimiento. Aprende a inspirar, motivar y guiar a tu equipo hacia el éxito a través de una comunicación efectiva.",
+        professor: "Fabian V.",
+        enrolled: "62 students",
+        date: "12 noviembre 2026",
+        image: "assets/Mesa de trabajo 5.png",
+        meta: "Recomendado por tu rol",
+        progress: 0
+    },
+    {
+        id: 6,
+        title: "Resolución Ágil de problemas",
+        description: "Aprende los fundamentos para proteger nuestra infraestructura digital. Identifica amenazas y aplica protocolos de seguridad de primer nivel.",
+        professor: "Martha G.",
+        enrolled: "210 students",
+        date: "1 diciembre 2026",
+        image: "assets/Mesa de trabajo 6.png",
+        meta: "Obligatorio",
+        progress: 100
+    }
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+    const track = document.getElementById("carousel-track");
+    const heroBgImage = document.getElementById("hero-bg-image");
+    const heroTitle = document.getElementById("hero-title");
+    const heroDescription = document.getElementById("hero-description");
+    const heroProfessor = document.getElementById("hero-professor");
+    const heroEnrolled = document.getElementById("hero-enrolled");
+    const heroDate = document.getElementById("hero-date");
+
+    // Initialize with first course
+    updateHero(courses[0]);
+
+    // Render course cards
+    courses.forEach((course, index) => {
+        const card = document.createElement("div");
+        card.className = `course-card ${index === 0 ? 'active' : ''}`;
+        card.dataset.id = course.id;
+
+        card.innerHTML = `
+            <div class="card-image-container">
+                <div class="card-bg" style="background-image: url('${course.image}')"></div>
+                <div class="card-overlay"></div>
+                <div class="card-info-overlay">
+                    <h3 class="card-title">${course.title}</h3>
+                </div>
+                <div class="card-progress-track" style="${course.progress > 0 ? 'display: block;' : ''}">
+                    <div class="card-progress-fill" style="width: ${course.progress}%;"></div>
+                </div>
+            </div>
+        `;
+
+        card.addEventListener("click", () => {
+            // Remove active class from all
+            document.querySelectorAll(".course-card").forEach(c => c.classList.remove("active"));
+            // Add active class to clicked
+            card.classList.add("active");
+            // Update hero
+            updateHero(course);
+        });
+
+        track.appendChild(card);
+    });
+
+    function updateHero(course) {
+        // Fade out effect on text (optional)
+        heroTitle.style.opacity = 0;
+        heroDescription.style.opacity = 0;
+
+        setTimeout(() => {
+            heroBgImage.style.backgroundImage = `url('${course.image}')`;
+            heroTitle.innerHTML = course.title;
+            heroDescription.textContent = course.description;
+            heroProfessor.textContent = course.professor;
+            heroEnrolled.textContent = course.enrolled;
+            heroDate.textContent = course.date;
+
+            // Fade in effect
+            heroTitle.style.transition = 'opacity 0.3s ease';
+            heroDescription.style.transition = 'opacity 0.3s ease';
+            heroTitle.style.opacity = 1;
+            heroDescription.style.opacity = 1;
+        }, 150);
+    }
+
+    // Carousel scroll logic
+    const scrollLeftBtn = document.getElementById("scroll-left");
+    const scrollRightBtn = document.getElementById("scroll-right");
+
+    scrollRightBtn.addEventListener("click", () => {
+        // Scroll exactly the width of the visible container minus one card to show the next set
+        track.scrollBy({ left: track.clientWidth * 0.7, behavior: 'smooth' });
+    });
+
+    scrollLeftBtn.addEventListener("click", () => {
+        track.scrollBy({ left: -track.clientWidth * 0.7, behavior: 'smooth' });
+    });
+
+    // Update button visibility based on scroll position
+    track.addEventListener("scroll", () => {
+        // Show left button only if scrolled past beginning
+        scrollLeftBtn.style.display = track.scrollLeft > 10 ? "flex" : "none";
+
+        // Hide right button if reached the end
+        const isAtEnd = track.scrollLeft + track.clientWidth >= track.scrollWidth - 10;
+        scrollRightBtn.style.display = isAtEnd ? "none" : "flex";
+    });
+});
+</script>
+
+<?php
+// Guardamos todo lo atrapado en la vkk

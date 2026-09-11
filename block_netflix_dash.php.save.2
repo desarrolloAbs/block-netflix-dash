@@ -1,0 +1,17 @@
+<?php
+class block_netflix_dash extends block_base {
+public function init() {
+//ocultamos el titulo por defecto para que el hero section domine todo
+$this->title = '';
+}
+public function get_content() {
+if ($this->content !== null) {
+return $this->content;
+}
+$this->content = new stdClass();
+
+//Aqui inyectaremos el CSS Vainilla y la estructuta HTML Semantica 
+$html = '
+
+<style>
+
