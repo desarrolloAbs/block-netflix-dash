@@ -64,7 +64,7 @@
     position: relative;
 }
 
-.block_netflix_dash .text-on-surface { color: var(--on-surface); }
+.block_netflix_dash .text-on-surface { color: #fff; }
 .block_netflix_dash .text-on-surface-variant { color: var(--on-surface-variant); }
 
 .block_netflix_dash .hero-section {
@@ -133,7 +133,7 @@
     font-weight: 700;
     line-height: 40px;
     letter-spacing: -0.02em;
-    color: var(--on-surface);
+    color: #fff;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     margin: 0;
 }
@@ -151,7 +151,7 @@
     font-size: 14px;
     font-weight: 400;
     line-height: 24px;
-    color: var(--on-surface-variant);
+    color: #fff;
     max-width: 600px;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     margin: 0;
@@ -163,7 +163,7 @@
     align-items: center;
     gap: 16px;
     font-size: 14px;
-    color: rgba(170, 186, 204, 0.8);
+    color: #fff;
     margin-top: 4px;
 }
 
@@ -210,7 +210,7 @@
     font-size: 20px;
     font-weight: 700;
     line-height: 28px;
-    color: var(--on-surface);
+    color: #fff;
     margin-bottom: var(--stack-sm);
 }
 
